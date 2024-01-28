@@ -6,6 +6,6 @@ Open Source Static Library in c++, Helal.lib
    -VC++ Directories
    -Include Directoies
    -Then Add Library Directory such as (..\Helal).
-   -
+   
    
 
