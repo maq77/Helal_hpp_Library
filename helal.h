@@ -4,14 +4,13 @@
 
 #include <iostream>
 #include <string>
-#include <ctime>    // For seeding std::rand
-#include <cstdlib>  // For std::rand, std::srand
-#include <random>   // For std::mt19937, std::uniform_int_distribution
+#include <ctime>
+#include <cstdlib>
+#include <random>
 #include <vector>
 #include <chrono>
-#include <iomanip>
 #include <cassert>
-#include <limits>
+#include <fstream>
 using namespace std;
 
 using ll = long long;
@@ -75,6 +74,11 @@ const db PI = acos((db)-1);
 const int dx[4]{ 1, 0, -1, 0 }, dy[4]{ 0, 1, 0, -1 };  // for every grid problem!!
 mt19937 rng((uint32_t)chrono::steady_clock::now().time_since_epoch().count());
 
+#ifdef _MSC_VER // Check if Microsoft Visual C++
+#define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning
+#define freopen freopen_s //// replace 
+#endif
+
 tcT > bool ckmin(T& a, const T& b) {
 	return b < a ? a = b, 1 : 0;
 }  // set a = min(a,b)
@@ -97,17 +101,68 @@ tcTU > void safeErase(T& t, const U& u) {
 	t.erase(it);
 }
 /// 
+/// log Namespace , Helping with Algorithm Analaysis By Helal
+/// 
+inline namespace logging {
+
+	void log(const str& message, const str& logFileName = "log.txt") {
+		auto now = std::chrono::system_clock::now();
+		auto now_t = std::chrono::system_clock::to_time_t(now);
+		// Get local time
+		tm timeInfo;
+        #ifdef _MSC_VER // Use localtime_s on Microsoft Visual C++
+		 localtime_s(&timeInfo, &now_t);
+        #else // Use localtime for other compilers
+		 timeInfo = *localtime(&now_t);
+        #endif
+
+		// Convert time to string with format
+		char time_str[20]; // Buffer to hold the formatted time
+		strftime(time_str, sizeof(time_str), "%Y-%m-%d %X", &timeInfo);
+
+		// Open the log file in append mode
+		ofstream logfile(logFileName, std::ios_base::app);
+		if (logfile.is_open()) {
+			// Write timestamp and message to the log file
+			logfile << "[" << time_str << "] " << message << std::endl;
+			// Close the file
+			logfile.close();
+		}
+		else {
+			// Error opening log file
+			std::cerr << "Error opening log file: " << logFileName << std::endl;
+		}
+	}
+
+
+
+}  // namespace Log
+/// 
 /// Debug Namespace , Helping with Algorithm Analaysis By Helal
 /// 
 inline namespace Debug {
 	
 	const auto beg_time = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
 	//Source: https://stackoverflow.com/questions/47980498/accurate-c-c-clock-on-a-multi-core-processor-with-auto-overclock?noredirect=1&lq=1
 	double time_elapsed() {
 		return chrono::duration<double>(std::chrono::high_resolution_clock::now() -
 			beg_time)
 			.count();
 	}
+	void Start_Time() {
+		 start = std::chrono::high_resolution_clock::now();
+	}
+	void End_Time() {
+		 end = std::chrono::high_resolution_clock::now();
+	}
+	double duration() {
+		return  std::chrono::duration<double>(end - start).count();
+	}
+
+
+
 }  // namespace Debug
 
 inline namespace handle_error { ////Handling error by Exception made by Helal
@@ -155,11 +210,12 @@ inline namespace handle_error { ////Handling error by Exception made by Helal
 	}
 
 }
-/**
+
 /// 
 /// FileIO Namespace , This improves the efficiency of input/output operations By Helal
-/// 
-
+///
+ 
+/**
 #ifdef _MSC_VER // Check if compiling with Visual Studio
 #define freopen freopen_s //// replace 
 #endif
@@ -177,8 +233,58 @@ inline namespace FileIO {
 	}
 }  // namespace FileIO
 */
+inline namespace FileIO {
+	    extern str filename = "data.txt";
+		void setIO(const str& newFilename) {
+			filename = newFilename;
+		}
+	     tcT>
+			 bool write(const T& data) {
+			 std::ofstream file(filename);
+			 if (!file.is_open()) {
+				 return false; // Failed to open file
+			 }
 
+			 file << data;
+			 file.close();
+			 return true;
+		 }
+		 tcT >
+			 bool write(const T& data, const str filename) {
+			 std::ofstream file(filename);
+			 if (!file.is_open()) {
+				 return false; // Failed to open file
+			 }
 
+			 file << data;
+			 file.close();
+			 return true;
+		 }
+		 tcT >
+			 bool read(T& data) {
+			 std::ifstream file(filename);
+			 if (!file.is_open()) {
+				 return false; // Failed to open file
+			 }
+
+			 file >> data;
+			 file.close();
+			 return true;
+		 }
+		 tcT >
+			 bool read(T& data , const str filename) {
+			 std::ifstream file(filename);
+			 if (!file.is_open()) {
+				 return false; // Failed to open file
+			 }
+
+			 file >> data;
+			 file.close();
+			 return true;
+		 }
+		 
+		
+}
  /**
  * Description: Dist, Randomize V2
  * Source: Helal + Dhruv Rohatgi
