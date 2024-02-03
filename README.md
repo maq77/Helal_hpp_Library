@@ -6,6 +6,7 @@ Use the package manager [Helal](https://github.com/maq77/Helal_hpp_Library) to i
 
 ## Library Includes
 The "Helal" library provides several utility functions and namespaces to aid in algorithm analysis and handling errors. 
+[Manual.txt](https://github.com/maq77/Helal_hpp_Library/blob/main/Manual.txt)
 Here's a summary of its main functionalities:
 
 #### 1-Template Typedefs and Aliases:
